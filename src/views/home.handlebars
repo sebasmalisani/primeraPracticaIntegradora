@@ -1,0 +1,22 @@
+<div class="titulo">Productos</div>
+<div class="listaProductos">
+  {{#each listadeproductos}}
+    <article class="container">
+      <div class="card">
+        <div class="img">
+          <img src="{{thumbnail}}" width="150" />
+        </div>
+        <div class="content">
+          <h2>Titulo:{{title}}</h2>
+          <div class="size">
+            <h3> Descripcion: {{description}}</h3>
+            <h4> Stock: {{stock}}</h4>
+          </div>
+          <div>
+            <h3>Price: {{price}}</h3>
+          </div>
+        </div>
+      </div>
+    </article>
+  {{/each}}
+</div>
