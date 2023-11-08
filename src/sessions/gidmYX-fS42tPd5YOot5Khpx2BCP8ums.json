@@ -1,0 +1,11 @@
+{
+  "cookie": {
+    "originalMaxAge": 60000,
+    "expires": "2023-11-08T21:10:19.192Z",
+    "httpOnly": true,
+    "path": "/"
+  },
+  "__lastAccess": 1699477759193,
+  "name": "Sebas",
+  "email": "sebas.malisani@gmail.com"
+}

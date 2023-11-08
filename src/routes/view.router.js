@@ -8,8 +8,29 @@ const router = Router();
 router.get("/", async (req, res) => {
   const listadeproductos = await pmanager.getProducts();
   console.log(listadeproductos);
-  res.render("home", { listadeproductos });
+  res.render("home", { listadeproductos, user: req.session.user } );
 });
+
+router.get('/login', (req,res)=>{
+  if(req.session.user){
+    return res.redirect('/profile')
+  }
+  res.render('login')
+})
+
+router.get('/signup', (req,res)=>{
+  if(req.session.user){
+    return res.redirect('/')
+  }
+  res.render('signup')
+})
+
+router.get('/profile', (req,res)=>{
+  if(!req.session.user){
+    return res.redirect('/')
+  }
+  res.render('profile', {user: req.session.user})
+})
 
 router.get("/realtimeproducts", (req, res) => {
   res.render("realtimeproducts");

@@ -1,4 +1,8 @@
 <div class="titulo">Productos</div>
+<h2>Welcome {{user.first_name}}</h2>
+<h4>Your email is: {{user.email}}</h4>
+
+<button><a href="/api/sessions/signout">Sing Out</a></button>
 <div class="listaProductos">
   {{#each listadeproductos}}
     <article class="container">
