@@ -1,22 +1,22 @@
 import { Router } from "express";
 import { userManager } from "../dao/managerDB/usersManager.js";
-import passport from 'passport';
+// import passport from 'passport';
 
 
 const router = Router();
 
-router.get("/github", passport.authenticate('github', { scope: ['user:email'] }), async (req, res) => { });
+// router.get("/github", passport.authenticate('github', { scope: ['user:email'] }), async (req, res) => { });
 
-router.get("/githubcallback", passport.authenticate('github', { failureRedirect: '/github/error' }), async (req, res) => {
-    const user = req.user;
-    req.session.user = {
-        name: `${user.first_name} ${user.last_name}`,
-        email: user.email,
-        age: user.age
-    };
-    req.session.admin = true;
-    res.redirect('http://localhost:8080');
-});
+// router.get("/githubcallback", passport.authenticate('github', { failureRedirect: '/github/error' }), async (req, res) => {
+//     const user = req.user;
+//     req.session.user = {
+//         name: `${user.first_name} ${user.last_name}`,
+//         email: user.email,
+//         age: user.age
+//     };
+//     req.session.admin = true;
+//     res.redirect('http://localhost:8080');
+// });
 
 // router.post("/register", passport.authenticate('register', { failureRedirect: '/api/sessions/fail-register' }), async (req, res) => {
 //   res.status(201).send({ status: "success", message: "Usuario creado con extito." })
@@ -67,7 +67,8 @@ router.post("/signup", async (req, res) => {
     const createdUser = await userManager.createOne(req.body);
     res.status(200).json({ message: "User Created", user: createdUser });
   } catch (error) {
-    res.status(500).json({ error });
+    res.redirect("/");
+    
   }
 });
 
