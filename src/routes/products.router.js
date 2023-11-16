@@ -6,7 +6,7 @@ import { __dirname } from "../utils.js";
 
 const router = Router();
 
-router.get("/products", async (req, res) => {
+router.get("/", async (req, res) => {
   const products = await manager.getProducts();
   if (products.length === 0) {
     res.json("No hay productos en la tienda");
