@@ -17,7 +17,11 @@ const usersSchema = new mongoose.Schema({
     password:{
         type: String,
         required: true,
-    }
+    },
+    isGithub: {
+        type: Boolean,
+        default: false,
+      },
 })
 
 export const usersModel = mongoose.model("Users", usersSchema)

@@ -1,62 +1,10 @@
 import { Router } from "express";
-import { userManager } from "../dao/managerDB/usersManager.js";
-// import passport from 'passport';
+import { usersManager  } from "../dao/managerDB/usersManager.js";
+import passport from 'passport';
+import { hashData, compareData } from "../utils.js";
 
 
 const router = Router();
-
-// router.get("/github", passport.authenticate('github', { scope: ['user:email'] }), async (req, res) => { });
-
-// router.get("/githubcallback", passport.authenticate('github', { failureRedirect: '/github/error' }), async (req, res) => {
-//     const user = req.user;
-//     req.session.user = {
-//         name: `${user.first_name} ${user.last_name}`,
-//         email: user.email,
-//         age: user.age
-//     };
-//     req.session.admin = true;
-//     res.redirect('http://localhost:8080');
-// });
-
-// router.post("/register", passport.authenticate('register', { failureRedirect: '/api/sessions/fail-register' }), async (req, res) => {
-//   res.status(201).send({ status: "success", message: "Usuario creado con extito." })
-// });
-
-// router.post("/login", passport.authenticate('login', { failureRedirect: '/api/sessions/fail-register' }), async (req, res) => {
-//   const user = req.user;
-//   if (!user) return res.status(401).send({ status: "error", error: "credenciales incorrectas" });
-//   req.session.user = {
-//       name: `${user.first_name} ${user.last_name}`,
-//       email: user.email,
-//       age: user.age
-//   }
-//   res.send({ status: "success", payload: req.session.user, message: "logueo realizado" });
-// });
-
-// router.get("/logout", (req, res) => {
-//   req.session.destroy(error => {
-//       if (error){
-//           res.status(400).json({error: "error logout", mensaje: "Error al cerrar la sesion"});
-//       }
-//       res.status(200).json({message: "Sesion cerrada correctamente."});
-//   });
-// });
-
-// router.get("/current", (req, res) => {
-//   if (req.session.user) {
-//     res.status(200).json({ user: req.session.user });
-//   } else {
-//     res.status(401).json({ error: 'No hay sesión activa' });
-//   }
-// });
-
-// router.get("/fail-register", (req, res) => {
-//   res.status(401).send({ error: "Failed to process register!" });
-// });
-
-// router.get("/fail-login", (req, res) => {
-//   res.status(401).send({ error: "Failed to process login!" });
-// });
 
 // router.post("/signup", async (req, res) => {
 //   const { first_name, last_name, email, password } = req.body;
@@ -64,55 +12,92 @@ const router = Router();
 //     return res.status(400).json({ message: "All fields are required" });
 //   }
 //   try {
-//     const createdUser = await userManager.createOne(req.body);
-//     res.status(200).json({ message: "User Created", user: createdUser });
+//     const createdUser = await usersManager .createOne(req.body);
+//     res.status(200).json({ message: "User created", user: createdUser });
 //   } catch (error) {
-//     return res.redirect("/");
-    
+//     res.status(500).json({ error });
 //   }
 // });
-router.post("/signup", async (req, res) => {
-  const { first_name, last_name, email, password } = req.body;
-  if (!first_name || !last_name || !email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-  try {
-    const createdUser = await userManager.createOne(req.body);
-    res.status(200).json({ message: "User created", user: createdUser });
-  } catch (error) {
-    res.status(500).json({ error });
-  }
+
+// router.post("/login", async (req, res) => {
+//   const { email, password } = req.body;
+//   if (!email || !password) {
+//     return res.status(400).json({ message: "All fields are required" });
+//   }
+//   try {
+//     const user = await usersManager .findByEmail(email);
+//     if (!user) {
+//       return res.redirect("/signup");
+//     }
+//     const isPasswordValid = password === user.password;
+//     if (!isPasswordValid) {
+//       return res.status(401).json({ message: "Password is not valid" });
+//     }
+//     const sessionInfo =
+//       email === "adminCoder@coder.com" && password === "adminCod3r123"
+//         ? { email, first_name: user.first_name, isAdmin: true }
+//         : { email, first_name: user.first_name, isAdmin: false };
+//     req.session.user = sessionInfo;
+//     res.redirect("/");
+//   } catch (error) {
+//     res.status(500).json({ error });
+//   }
+// });
+
+// router.get('/signout', (req,res)=>{
+//     req.session.destroy(()=>{
+//         res.redirect('/login')
+//     })
+// })
+
+router.post(
+  "/signup",
+  passport.authenticate("signup", {
+    successRedirect: "/profile",
+    failureRedirect: "/error",
+  })
+);
+
+router.post(
+  "/login",
+  passport.authenticate("login", {
+    successRedirect: "/profile",
+    failureRedirect: "/error",
+  })
+);
+
+// SIGNUP - LOGIN - PASSPORT GITHUB
+
+router.get(
+  "/auth/github",
+  passport.authenticate("github", { scope: ["user:email"] })
+);
+
+router.get("/callback", passport.authenticate("github"), (req, res) => {
+  res.send("Probando");
 });
 
-router.post("/login", async (req, res) => {
+router.get("/signout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/login");
+  });
+});
+
+router.post("/restaurar", async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
   try {
-    const user = await userManager.findByEmail(email);
+    const user = await usersManager.findByEmail(email);
     if (!user) {
-      return res.redirect("/signup");
+      return res.redirect("/");
     }
-    const isPasswordValid = password === user.password;
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Password is not valid" });
-    }
-    const sessionInfo =
-      email === "adminCoder@coder.com" && password === "adminCod3r123"
-        ? { email, first_name: user.first_name, isAdmin: true }
-        : { email, first_name: user.first_name, isAdmin: false };
-    req.session.user = sessionInfo;
-    res.redirect("/");
+    const hashedPassword = await hashData(password);
+    user.password = hashedPassword;
+    await user.save();
+    res.status(200).json({ message: "Password updated" });
   } catch (error) {
     res.status(500).json({ error });
   }
 });
 
-router.get('/signout', (req,res)=>{
-    req.session.destroy(()=>{
-        res.redirect('/login')
-    })
-})
 
 export default router;

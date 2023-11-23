@@ -25,12 +25,22 @@ router.get('/signup', (req,res)=>{
   res.render('signup')
 })
 
-router.get('/profile', (req,res)=>{
-  if(!req.session.user){
-    return res.redirect('/')
+router.get("/profile", (req, res) => {
+  if (!req.session.passport) {
+    return res.redirect("/login");
   }
-  res.render('profile', {user: req.session.user})
-})
+  const { first_name, email } = req.user;
+  console.log(first_name, email);
+  res.render("profile", { user: { first_name, email } });
+});
+
+router.get("/restaurar", (req, res) => {
+  res.render("restaurar");
+});
+
+router.get("/error", (req, res) => {
+  res.render("error");
+});
 
 router.get("/realtimeproducts", (req, res) => {
   res.render("realtimeproducts");

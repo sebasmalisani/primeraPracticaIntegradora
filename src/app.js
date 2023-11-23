@@ -12,6 +12,8 @@ import session from "express-session";
 import sessionsRouter from "./routes/sessions.router.js";
 import fileStore from "session-file-store";
 import MongoStore from "connect-mongo";
+import "./passport.js";
+import passport from "passport";
 
 const FileStore = fileStore(session);
 const app = express();
@@ -45,6 +47,9 @@ app.use(
     cookie: { maxAge: 60000 },
   })
 );
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.engine("handlebars", handlebars.engine());
 app.set("views", __dirname + "/views");
