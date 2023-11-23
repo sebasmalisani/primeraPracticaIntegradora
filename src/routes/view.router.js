@@ -20,7 +20,7 @@ router.get('/login', (req,res)=>{
 
 router.get('/signup', (req,res)=>{
   if(req.session.user){
-    return res.redirect('/')
+    return res.redirect('/login')
   }
   res.render('signup')
 })

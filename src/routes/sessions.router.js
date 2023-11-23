@@ -58,6 +58,19 @@ const router = Router();
 //   res.status(401).send({ error: "Failed to process login!" });
 // });
 
+// router.post("/signup", async (req, res) => {
+//   const { first_name, last_name, email, password } = req.body;
+//   if (!first_name || !last_name || !email || !password) {
+//     return res.status(400).json({ message: "All fields are required" });
+//   }
+//   try {
+//     const createdUser = await userManager.createOne(req.body);
+//     res.status(200).json({ message: "User Created", user: createdUser });
+//   } catch (error) {
+//     return res.redirect("/");
+    
+//   }
+// });
 router.post("/signup", async (req, res) => {
   const { first_name, last_name, email, password } = req.body;
   if (!first_name || !last_name || !email || !password) {
@@ -65,10 +78,9 @@ router.post("/signup", async (req, res) => {
   }
   try {
     const createdUser = await userManager.createOne(req.body);
-    res.status(200).json({ message: "User Created", user: createdUser });
+    res.status(200).json({ message: "User created", user: createdUser });
   } catch (error) {
-    res.redirect("/");
-    
+    res.status(500).json({ error });
   }
 });
 
@@ -80,13 +92,17 @@ router.post("/login", async (req, res) => {
   try {
     const user = await userManager.findByEmail(email);
     if (!user) {
-     return res.redirect("/signup");
+      return res.redirect("/signup");
     }
     const isPasswordValid = password === user.password;
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Password is not valid" });
     }
-    req.session.user = { email, first_name: user.first_name };
+    const sessionInfo =
+      email === "adminCoder@coder.com" && password === "adminCod3r123"
+        ? { email, first_name: user.first_name, isAdmin: true }
+        : { email, first_name: user.first_name, isAdmin: false };
+    req.session.user = sessionInfo;
     res.redirect("/");
   } catch (error) {
     res.status(500).json({ error });
