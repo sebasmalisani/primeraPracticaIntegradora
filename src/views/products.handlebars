@@ -1,0 +1,16 @@
+
+<h3>¡Bienvenid@ {{user.name}}!</h3>
+<botoom> <a href="/api/sessions/signout"> Cerrar sesión</a> </botoom>
+
+{{#each productsData}}
+  <h2>{{title}}</h2>
+  <p>{{description}}</p>
+  <p> $:{{price}}</p>
+  <p> Código:{{code}}</p>
+  <p> Stock:{{stock}}</p>
+  <p> {{thumbnails}}</p>
+  <p> {{_id}}</p>
+{{/each}}
+
+
+

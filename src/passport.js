@@ -33,8 +33,8 @@ passport.use(
 passport.use(
   "login",
   new LocalStrategy(
-    { usernameField: "email" },
-    async (email, password, done) => {
+    {  passReqToCallback: true, usernameField: "email" },
+    async (req, email, password, done) => {
       if (!email || !password) {
         done(null, false);
       }
@@ -47,6 +47,15 @@ passport.use(
         const isPasswordValid = await compareData(password, user.password);
         if (!isPasswordValid) {
           return done(null, false);
+        }
+        if (email === "adminCoder@coder.com") {
+          req.session.user = { email, name: user.name, isAdmin: true };
+        } else {
+          req.session.user = {
+            email: user.email,
+            name: user.name,
+            isAdmin: false,
+          };
         }
         // const sessionInfo =
         //   email === "adminCoder@coder.com"
@@ -111,16 +120,16 @@ export default passport;
 //   )
 // );
 
-// passport.serializeUser((user, done) => {
-//   // _id
-//   done(null, user._id);
-// });
+passport.serializeUser((user, done) => {
+  // _id
+  done(null, user._id);
+});
 
-// passport.deserializeUser(async (id, done) => {
-//   try {
-//     const user = await usersManager.findById(id);
-//     done(null, user);
-//   } catch (error) {
-//     done(error);
-//   }
-// });
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await usersManager.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error);
+  }
+});

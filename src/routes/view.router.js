@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { __dirname } from "../utils.js";
 import ProductManager from "../dao/managerDB/productManagerMongo.js";
+import CartManager from "../dao/managerDB/cartManagerMongo.js";
+
 const pmanager = new ProductManager();
 
 const router = Router();
@@ -50,4 +52,29 @@ router.get("/chat", (req, res) => {
   res.render("chat");
 });
 
+router.get("/products", async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/login")
+  }
+  let products = await ProductManager.findAll(req.query)
+  let productsDB = products.payload
+  const productsObject = productsDB.map(p => p.toObject());
+  res.render("products", {
+    productsData: productsObject,
+    user: req.session.user
+  });
+
+
+});
+
+router.get("/carts/:cartId", async (req, res) => {
+  const { cartId } = req.params
+  let cartById = await CartManager.findCartById(cartId);
+  let cartArray = cartById.products;
+  const cartArrayObject = cartArray.map(doc => doc.toObject());
+  console.log(cartArrayObject);
+  res.render("cart", {
+    cartData: cartArrayObject
+  });
+});
 export default router;
